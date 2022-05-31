@@ -72,7 +72,8 @@ class Database:
         with self.conn as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    UPDATE genre SET genre_name = %s 
+                    UPDATE genre 
+                    SET genre_name = %s 
                     WHERE genre_id = %s
                     """,
                     (genre_name, genre_id))
@@ -104,7 +105,8 @@ class Database:
         with self.conn as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    UPDATE app_user SET f_name = %s, l_name = %s, email = %s, state_id = %s 
+                    UPDATE app_user 
+                    SET f_name = %s, l_name = %s, email = %s, state_id = %s 
                     WHERE app_user_id = %s
                     """,
                     (f_name, l_name, email, state_id, user_id))
@@ -136,8 +138,8 @@ class Database:
         with self.conn as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    UPDATE festival SET 
-                    festival_name = %s, price = %s, state_id =%s 
+                    UPDATE festival 
+                    SET festival_name = %s, price = %s, state_id =%s 
                     WHERE festival_id = %s
                     """,
                     (festival_name, price, state_id, festival_id))
@@ -169,11 +171,11 @@ class Database:
         with self.conn as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    UPDATE artist SET 
-                    artist_name = %s, genre_id = %s
-                    WHERE festival_id = %s
+                    UPDATE artist 
+                    SET artist_name = %s, genre_id = %s
+                    WHERE artist_id = %s
                     """,
-                    (artist_id, artist_name, genre_id))
+                    (artist_name, genre_id, artist_id))
                 conn.commit()
 
     def delete_artist(self, artist_id):
@@ -187,6 +189,18 @@ class Database:
                 conn.commit()
 
     #############################################################
+    def get_user_favorite_artist(self, user_id):
+        with self.conn as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                SELECT fa.artist_id, a.artist_name, fa.score FROM favorite_artist as fa
+                JOIN artist as a ON fa.artist_id = a.artist_id
+                WHERE fa.app_user_id = %s
+                ORDER BY fa.score ASC;
+                """,
+                (user_id,))
+                data = cur.fetchall()
+                return data
 
     def create_favorite_artist(self, user_id, artist_id, score):
         with self.conn as conn:
@@ -198,14 +212,25 @@ class Database:
                     (user_id, artist_id, score))
                 conn.commit()
 
-    def create_favorite_artist(self, user_id, artist_id, score):
+    def update_favorite_artist(self, user_id, artist_id, score):
         with self.conn as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    INSERT INTO favorite_artist (app_user_id, artist_id, score)
-                    VALUES (%s, %s, %s)
+                    UPDATE favorite_artist 
+                    SET score = %s
+                    WHERE app_user_id = %s AND artist_id = %s
                     """,
-                    (user_id, artist_id, score))
+                    (score, user_id, artist_id))
+                conn.commit()
+
+    def delete_favorite_artist(self, user_id, artist_id):
+        with self.conn as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    DELETE FROM favorite_artist 
+                    WHERE user_id = %s AND artist_id = %s
+                    """,
+                    (user_id, artist_id))
                 conn.commit()
 
     def close_connection(self):

@@ -42,6 +42,16 @@ class Artist(BaseModel):
     artist_name: str
     genre_id: int
 
+"""
+FAVORITE ARTIST
+"""
+class UpdateFavoriteArtist(BaseModel):
+    score: int
+
+class CreateFavoriteArtist(UpdateFavoriteArtist):
+    artist_id: int
+
+
 @app.on_event("shutdown")
 def shutdown():
     db.close_connection()
@@ -103,6 +113,32 @@ def update_user(user_id: int, user: User):
 def delete_user(user_id: int):
     db.delete_user(user_id)
 
+""" Favorite Artists CRUD """
+
+@app.get("/users/{user_id}/favorite_artists")
+def get_user_favorite_artist(user_id: int):
+    favorite_artists = db.get_user_favorite_artist(user_id)
+    info = ("artist_id", "artist_name", "rating")
+    detailed_list = []
+    for artist in favorite_artists:
+        details = {}
+        for i, value in enumerate(artist):
+            details[info[i]] = value
+        detailed_list.append(details)  
+    return detailed_list
+
+@app.post("/users/{user_id}/favorite_artists")
+def create_favorite_artist(user_id: int, favorite_artist: CreateFavoriteArtist):
+    db.create_favorite_artist(user_id, favorite_artist.artist_id, favorite_artist.score)
+
+@app.put("/users/{user_id}/favorite_artists/{artist_id}")
+def update_favorite_artist(user_id: int, artist_id: int, favorite_artist: UpdateFavoriteArtist):
+    db.update_favorite_artist(user_id, artist_id, favorite_artist.score)
+
+@app.delete("/users/{user_id}/favorite_artists/{artist_id}")
+def delete_favorite_artist(user_id: int, artist_id: int):
+    db.delete_favorite_artist(user_id, artist_id)
+
 """ Festivals CRUD """
 
 @app.get("/festivals")
@@ -140,7 +176,5 @@ def update_artist(artist_id, artist: Artist):
 @app.delete("/artists/{artist_id}")
 def delete_artist(artist_id):
     db.delete_artist(artist_id)
-
-""" Favorite Artists CRUD """
 
 """ Artist Festivals CRUD """
