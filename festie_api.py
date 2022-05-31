@@ -76,6 +76,11 @@ class UpdateFavoriteArtist(BaseModel):
 class CreateFavoriteArtist(UpdateFavoriteArtist):
     artist_id: int
 
+"""
+ARTIST FESTIVAL
+"""
+class CreateArtistFestival(BaseModel):
+    festival_id: int
 
 @app.on_event("shutdown")
 def shutdown():
@@ -195,11 +200,27 @@ def create_artist(artist: Artist):
     db.create_artist(artist.artist_name, artist.genre_id)
 
 @app.put("/artists/{artist_id}", tags = ["artists"])
-def update_artist(artist_id, artist: Artist):
+def update_artist(artist_id: int, artist: Artist):
     db.update_artist(artist_id, artist.artist_name, artist.genre_id)
 
 @app.delete("/artists/{artist_id}", tags = ["artists"])
-def delete_artist(artist_id):
+def delete_artist(artist_id: int):
     db.delete_artist(artist_id)
 
 """ Artist Festivals CRUD """
+
+@app.get("/artists/{artist_id}/festivals", tags = ["artists"])
+def get_artist_festival(artist_id: int):
+    festivals = db.get_artist_festival(artist_id)
+    info = ("festival_id", "festival_name", "price", "state")
+    detailed_list = []
+    for festival in festivals:
+        details = {}
+        for i, value in enumerate(festival):
+            details[info[i]] = value
+        detailed_list.append(details)  
+    return detailed_list
+
+@app.post("/artists/{artist_id}/festivals", tags = ["artists"])
+def create_artist_festival(artist_id: int, artist_festival: CreateArtistFestival):
+    db.create_artist_festival(artist_id, artist_festival.festival_id)

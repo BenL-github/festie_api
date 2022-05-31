@@ -189,6 +189,7 @@ class Database:
                 conn.commit()
 
     #############################################################
+
     def get_user_favorite_artist(self, user_id):
         with self.conn as conn:
             with conn.cursor() as cur:
@@ -228,9 +229,36 @@ class Database:
             with conn.cursor() as cur:
                 cur.execute("""
                     DELETE FROM favorite_artist 
-                    WHERE user_id = %s AND artist_id = %s
+                    WHERE app_user_id = %s AND artist_id = %s
                     """,
                     (user_id, artist_id))
+                conn.commit()
+
+    #############################################################
+
+    def get_artist_festival(self, artist_id):
+        with self.conn as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                SELECT f.festival_id, f.festival_name, f.price, state_name 
+                FROM artist_festival as af
+                JOIN festival as f ON af.festival_id = f.festival_id
+                JOIN us_state ON f.state_id = us_state.state_id
+                WHERE af.artist_id = %s
+                ORDER BY f.festival_name ASC
+                """,
+                (artist_id,))
+                data = cur.fetchall()
+                return data
+
+    def create_artist_festival(self, artist_id, festival_id):
+        with self.conn as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                INSERT INTO artist_festival (artist_id, festival_id)
+                VALUES (%s, %s)
+                """,
+                (artist_id, festival_id))
                 conn.commit()
 
     def close_connection(self):
