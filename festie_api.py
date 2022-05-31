@@ -82,6 +82,22 @@ ARTIST FESTIVAL
 class CreateArtistFestival(BaseModel):
     festival_id: int
 
+
+def add_details(query_result, details):
+    """ 
+    Add details to the results of a database query 
+
+    :query result: result of the database query
+    :details: a tuple containing attribute names for each item in query result
+    """
+    detailed_list = []
+    for item in query_result:
+        detailed_item = {}
+        for i, value in enumerate(item):
+            detailed_item[details[i]] = value
+        detailed_list.append(detailed_item)
+    return detailed_list
+
 @app.on_event("shutdown")
 def shutdown():
     db.close_connection()
@@ -148,14 +164,7 @@ def delete_user(user_id: int):
 @app.get("/users/{user_id}/favorite_artists", tags = ["users"])
 def get_user_favorite_artist(user_id: int):
     favorite_artists = db.get_user_favorite_artist(user_id)
-    info = ("artist_id", "artist_name", "rating")
-    detailed_list = []
-    for artist in favorite_artists:
-        details = {}
-        for i, value in enumerate(artist):
-            details[info[i]] = value
-        detailed_list.append(details)  
-    return detailed_list
+    return add_details(favorite_artists, ("artist_id", "artist_name", "rating"))
 
 @app.post("/users/{user_id}/favorite_artists", tags = ["users"])
 def create_favorite_artist(user_id: int, favorite_artist: CreateFavoriteArtist):
@@ -212,14 +221,7 @@ def delete_artist(artist_id: int):
 @app.get("/artists/{artist_id}/festivals", tags = ["artists"])
 def get_artist_festival(artist_id: int):
     festivals = db.get_artist_festival(artist_id)
-    info = ("festival_id", "festival_name", "price", "state")
-    detailed_list = []
-    for festival in festivals:
-        details = {}
-        for i, value in enumerate(festival):
-            details[info[i]] = value
-        detailed_list.append(details)  
-    return detailed_list
+    return add_details(festivals, ("festival_id", "festival_name", "price", "state"))
 
 @app.post("/artists/{artist_id}/festivals", tags = ["artists"])
 def create_artist_festival(artist_id: int, artist_festival: CreateArtistFestival):
