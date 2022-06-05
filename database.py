@@ -261,6 +261,51 @@ class Database:
                 (artist_id, festival_id))
                 conn.commit()
 
+    def delete_artist_festival(self, artist_id, festival_id):
+        with self.conn as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                DELETE FROM artist_festival 
+                WHERE artist_id = %s AND festival_id = %s
+                """,
+                (artist_id, festival_id))
+                conn.commit()
+
+    #############################################################
+
+    def find_potential_festivals(self, user_id):
+        with self.conn as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                SELECT festival_name, COUNT(festival_name) 
+                FROM artist_festival as af 
+                JOIN favorite_artist as fa ON af.artist_id = fa.artist_id AND fa.app_user_id = %s 
+                JOIN festival on af.festival_id = festival.festival_id 
+                GROUP BY festival_name
+                ORDER BY COUNT(festival_name) DESC;
+                """,
+                (user_id,))
+                data = cur.fetchall()
+                return data
+    
+    def find_popular_festivals(self):
+        with self.conn as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                
+                """)
+                data = cur.fetchall()
+                return data
+
+    def find_festival_genres(self):
+        with self.conn as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                
+                """)
+                data = cur.fetchall()
+                return data
+
     def close_connection(self):
         """
         Close the connection

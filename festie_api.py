@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from database import Database
-from pydantic import BaseModel
+from schemas import *
 
 db = Database()
 
@@ -29,59 +29,6 @@ tags_metadata = [
 ]
 
 app = FastAPI(openapi_tags = tags_metadata)
-
-"""
-STATE
-"""
-
-class State(BaseModel):
-    state_name: str
-
-"""
-GENRE 
-"""
-class Genre(BaseModel):
-    genre_name: str
-
-"""
-USER
-"""
-class User(BaseModel):
-    f_name: str
-    l_name: str
-    email: str
-    state_id: int
-
-"""
-FESTIVAL
-"""
-class Festival(BaseModel):
-    festival_name: str
-    price: int
-    state_id: int
-
-"""
-ARTIST
-"""
-class Artist(BaseModel):
-    artist_name: str
-    genre_id: int
-
-"""
-FAVORITE ARTIST
-"""
-class UpdateFavoriteArtist(BaseModel):
-    score: int
-
-class CreateFavoriteArtist(UpdateFavoriteArtist):
-    artist_id: int
-
-"""
-ARTIST FESTIVAL
-"""
-class CreateArtistFestival(BaseModel):
-    festival_id: int
-
 
 def add_details(query_result, details):
     """ 
@@ -226,3 +173,14 @@ def get_artist_festival(artist_id: int):
 @app.post("/artists/{artist_id}/festivals", tags = ["artists"])
 def create_artist_festival(artist_id: int, artist_festival: CreateArtistFestival):
     db.create_artist_festival(artist_id, artist_festival.festival_id)
+
+@app.delete("/artists/{artist_id}/festivals/{festival_id}", tags = ["artists"])
+def delete_artist_festival(artist_id: int, festival_id: int):
+    db.delete_artist_festival(artist_id, festival_id)
+
+""" Fun Queries """
+
+@app.get("/users/{user_id}/festival_match", tags = ["users"])
+def get_user_festival_match(user_id: int):
+    festivals = db.find_potential_festivals(user_id)
+    return add_details(festivals, ("festival_name", "favorites_attending"))
