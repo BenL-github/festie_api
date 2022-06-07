@@ -1,9 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from database import Database
 from schemas import *
-
-db = Database()
-
+from routes import us_states, genre
 
 tags_metadata = [
     {
@@ -28,11 +26,15 @@ tags_metadata = [
     }
 ]
 
+db = Database()
 app = FastAPI(openapi_tags = tags_metadata)
 
+app.include_router(us_states.router)
+app.include_router(genre.router)
+
 def add_details(query_result, details):
-    """ 
-    Add details to the results of a database query 
+    """
+    Add details to the results of a database query
 
     :query result: result of the database query
     :details: a tuple containing attribute names for each item in query result
@@ -49,43 +51,6 @@ def add_details(query_result, details):
 def shutdown():
     db.close_connection()
     print("FastAPI shutdown")
-
-""" States CRUD """
-
-@app.get("/us_states", tags = ["us_states"])
-def get_us_state():
-    states = db.get_table("us_state")
-    return states
-
-@app.post("/us_states", tags = ["us_states"], status_code = 201)
-def post_us_state(state: State):
-    db.insert_us_state(state.state_name)
-    return {"Entry":state.state_name}
-
-@app.delete("/us_states", tags = ["us_states"])
-def delete_us_state(state: State):
-    db.delete_us_state(state.state_name)
-    return {"Delete":state.state_name}
-
-""" Genres CRUD """
-
-@app.get("/genres", tags = ["genres"])
-def get_genre():
-    genres = db.get_table("genre")
-    return genres
-
-@app.post("/genres", tags = ["genres"], status_code = 201)
-def post_genre(genre: Genre):
-    db.insert_genre(genre.genre_name)
-    return {"Entry":genre.genre_name}
-
-@app.put("/genres/{genre_id}", tags = ["genres"], status_code = 204)
-def update_genre(genre_id: int, genre: Genre):
-    db.update_genre(genre_id, genre.genre_name)
-
-@app.delete("/genres/{genre_id}", tags = ["genres"], status_code = 200)
-def delete_genre(genre_id: int):
-    db.delete_genre(genre_id)
 
 """ Users CRUD """
 
