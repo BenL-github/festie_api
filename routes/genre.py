@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from schemas import Genre
-import festie_api as api
+import main as api
 
 router = APIRouter()
 

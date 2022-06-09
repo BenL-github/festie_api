@@ -2,7 +2,6 @@ import psycopg2
 import os
 import sys
 
-print("password: ", os.getenv("POSTGRES_PASSWORD"))
 try:
     conn = psycopg2.connect(
         host = os.getenv("POSTGRES_HOST"),
@@ -20,14 +19,4 @@ with conn:
     with conn.cursor() as cur:
         cur.execute(open("db_setup.sql", "r").read())
 
-with conn:
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT * FROM genre
-        """)
-
-        print(cur.fetchall())
-        
-        conn.commit()
-
-        
+conn.close()

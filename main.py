@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from database import Database
 from schemas import *
 from routes import festival, us_states, genre, user, artist

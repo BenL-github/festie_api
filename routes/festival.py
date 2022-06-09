@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from schemas import Festival
-import festie_api as api
-
+import main as api
 router = APIRouter()
 
 @router.get("/festivals", tags = {"festivals"})

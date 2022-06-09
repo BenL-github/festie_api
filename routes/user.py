@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from schemas import User, CreateFavoriteArtist, UpdateFavoriteArtist
-import festie_api as api
+import main as api
 
 router = APIRouter()
 
