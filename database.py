@@ -314,3 +314,21 @@ class Database:
         self.conn.close()
         print("DB Connection closed")
 
+def init():
+    global db
+    db = Database()
+
+def add_details(query_result, details):
+    """
+    Add details to the results of a database query
+
+    :query result: result of the database query
+    :details: a tuple containing attribute names for each item in query result
+    """
+    detailed_list = []
+    for item in query_result:
+        detailed_item = {}
+        for i, value in enumerate(item):
+            detailed_item[details[i]] = value
+        detailed_list.append(detailed_item)
+    return detailed_list

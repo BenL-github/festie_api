@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from database import Database
+import database
 from schemas import *
 from routes import festival, us_states, genre, user, artist
 
@@ -28,7 +28,8 @@ tags_metadata = [
 ]
 
 # init connection to PostgreSQL database
-db = Database()
+database.init()
+
 # create FastAPI app
 app = FastAPI(openapi_tags = tags_metadata)
 
@@ -38,21 +39,6 @@ app.include_router(genre.router)
 app.include_router(user.router)
 app.include_router(festival.router)
 app.include_router(artist.router)
-
-def add_details(query_result, details):
-    """
-    Add details to the results of a database query
-
-    :query result: result of the database query
-    :details: a tuple containing attribute names for each item in query result
-    """
-    detailed_list = []
-    for item in query_result:
-        detailed_item = {}
-        for i, value in enumerate(item):
-            detailed_item[details[i]] = value
-        detailed_list.append(detailed_item)
-    return detailed_list
 
 @app.on_event("shutdown")
 def shutdown():
