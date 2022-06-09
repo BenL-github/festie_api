@@ -46,8 +46,9 @@ jobs:
       - name: Connect to PostgreSQL
         # Runs a script that creates a PostgreSQL table, populates
         # the table with data, and then retrieves the data
-        run: python3 test_db.py 
-        run: uvicorn main:app 
+        run: |
+          python3 test_db.py 
+          uvicorn main:app 
         # Environment variables used by the `client.js` script to create
         # a new PostgreSQL table.
         env:
