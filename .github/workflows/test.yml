@@ -47,8 +47,8 @@ jobs:
         # Runs a script that creates a PostgreSQL table, populates
         # the table with data, and then retrieves the data
         run: |
-          python3 test_db.py 
-          uvicorn main:app 
+          python3 database_mock.py 
+          pytest
         # Environment variables used by the `client.js` script to create
         # a new PostgreSQL table.
         env:
