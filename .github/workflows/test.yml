@@ -37,7 +37,7 @@ jobs:
           python-version: 3.7
 
       # Performancs clean install of all dependencies in pip file 
-      - name: Install python dependencies 
+      - name: Install Python dependencies 
         uses: py-actions/py-dependency-install@v3
         with:
           path: "./requirements.txt"
@@ -46,9 +46,7 @@ jobs:
       - name: Connect to PostgreSQL
         # Runs a script that creates a PostgreSQL table, populates
         # the table with data, and then retrieves the data
-        run: |
-          python3 database_mock.py 
-          pytest
+        run: python3 database_mock.py 
         # Environment variables used by the `client.js` script to create
         # a new PostgreSQL table.
         env:
@@ -59,3 +57,6 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
+      # Run tests
+      - name: Run test suite 
+        run: pytest

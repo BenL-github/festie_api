@@ -42,5 +42,5 @@ app.include_router(artist.router)
 
 @app.on_event("shutdown")
 def shutdown():
-    db.close_connection()
+    database.db.close_connection()
     print("FastAPI shutdown")

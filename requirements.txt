@@ -4,3 +4,8 @@ psycopg2-binary
 python-dotenv
 pytest
 requests
+beautifulsoup4
+
+selenium
+
+webdriver-manager
